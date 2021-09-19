@@ -2,38 +2,43 @@ package Lesson3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-public class Box<T> {
-    private T[] object;
+public class Box<T extends Fruit> {
 
-    public Box(T object) {
-        this.object = (T[]) object;
+    private List<T> fruits;
+
+    public Box(List<T> fruits) {
+        if (fruits != null) {
+            this.fruits = fruits;
+        } else {
+            this.fruits = new ArrayList<>();
+        }
     }
 
-    public T getObject() {
-        return (T) object;
+    public double getWeight() {
+        double weight = 0f;
+        for (T fruit : fruits) {
+            weight += fruit.getWeight();
+        }
+        return weight;
     }
 
-    public void setObject(T object) {
-        this.object = (T[]) object;
+    public boolean compare(Box other){
+        return this.getWeight() == other.getWeight();
     }
 
-    @Override
-    public String toString() {
-        return "Box{" +
-                "object=" + Arrays.toString(object) +
-                '}';
+    public void addFruits(List<T> fruits){
+        this.fruits.addAll(fruits);
     }
 
-    public static void main(String[] args) {
-//        Box<Fruit> orange = new Box<>("orange");
-//        Box<Fruit> apple = new Box<>("apple");
-//        ArrayList<Fruit> arrayListApp = new ArrayList<>("apple");
-//        ArrayList<Fruit> arrayListOrn = new ArrayList<>("orange");
-
+    public void addFruit(T fruit){
+        this.fruits.add(fruit);
     }
 
-    public static int getWeight() {
-        return 0;
+    public void putAllToOther(Box<T> other){
+        other.addFruits(this.fruits);
+        this.fruits.clear();
     }
+
 }
