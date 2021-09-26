@@ -1,7 +1,11 @@
 package Lesson5;
 
+
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class App {
@@ -12,26 +16,34 @@ public class App {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ArrayList<Student> studentArrayList = new ArrayList<>();
+        AppData appData = new AppData();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader("students.csv"))) {
             String tempString;
+            String[] headers = bufferedReader.readLine().split(";");
+            appData.setHeader(headers);
+            List<int[]> lines = new ArrayList<>();
             while ((tempString = bufferedReader.readLine()) != null) {
-                String[] studentParamsArray = tempString.split(";");
-                studentArrayList.add(new Student(studentParamsArray[0], studentParamsArray[1],
-                        Integer.parseInt(studentParamsArray[2])));
-            }  //Oleg Tikhonov 29
+                String[] stringLine = tempString.split(";");
+                int[] intLine = new int[stringLine.length];
+                for(int i = 0; i < intLine.length; i++){
+                    intLine[i] = Integer.parseInt(stringLine[i]);
+                }
+                lines.add(intLine);
+            }
+            appData.setData(lines.toArray(new int[lines.size()][headers.length]));
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println(studentArrayList);
 
         try (PrintWriter printWriter = new PrintWriter("new_students.csv")) {
-            for (Student student : studentArrayList) {
-                printWriter.println(student.toString());
-            }
+           printWriter.println(String.join(";", appData.getHeader()));
+           for(int[] line : appData.getData()){
+               List<String> strLine = Arrays.stream(line).mapToObj(a -> Integer.toString(a)).collect(Collectors.toList());
+               printWriter.println(String.join(";",strLine.toArray(new String[strLine.size()])));
+           }
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
